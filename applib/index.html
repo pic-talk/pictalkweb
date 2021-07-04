@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   
+   <link rel="Shortcut Icon" href="/assets/img/favicon.ico" type="image/x-icon" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title> - PICTALK</title>
+
+    
+    
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha256-eSi1q2PG6J7g7ib17yAaWMcrr5GrtohYChqibrV7PBE=" />
+<meta name="x-stylesheet-fallback-test" content="" class="sr-only" /><script>!function(a,b,c,d){var e,f=document,g=f.getElementsByTagName("SCRIPT"),h=g[g.length-1].previousElementSibling,i=f.defaultView&&f.defaultView.getComputedStyle?f.defaultView.getComputedStyle(h):h.currentStyle;if(i&&i[a]!==b)for(e=0;e<c.length;e++)f.write('<link href="'+c[e]+'" '+d+"/>")}("position","absolute",["\/lib\/bootstrap\/dist\/css\/bootstrap.min.css"], "rel=\u0022stylesheet\u0022 crossorigin=\u0022anonymous\u0022 integrity=\u0022sha256-eSi1q2PG6J7g7ib17yAaWMcrr5GrtohYChqibrV7PBE=\u0022 ");</script>
+    
+    <link rel="stylesheet" href="/css/site.css" />
+    <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">  
+
+
+
+
+
+
+<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 bg-white border-bottom box-shadow" style="style=font-family: 'Roboto Mono', monospace;">
+      <h5 class="my-0 mr-md-auto font-weight-normal"><a class="text-dark" href = "/home"> PIC-TALK </a></h5>
+      <nav class="navbar my-2 my-md-0 mr-md-3">
+        <div class="container-fluid">
+            <a class="p-2 text-dark"  style="font-family: 'Roboto Mono', monospace;" href="/">Home</a>
+            <a class="p-2 text-dark" style="font-family: 'Roboto Mono', monospace;" href="/applib">App Center</a>
+            <a class="p-2 text-dark" style="font-family: 'Roboto Mono', monospace;" href="/contents.html">Content Center</a>
+            <a class="p-2 text-dark" style="font-family: 'Roboto Mono', monospace;" href="/contact.html">Contact</a>
+        </div>   
+      </nav>
+     </div>
+    <div class="">
+        <main role="main" >
+            
+<html>
+
+<head>
+
+    <meta name="viewport" content="width=1024">
+
+    <link href="https://fonts.googleapis.com/css?family=Quicksand|Roboto+Mono|Oswald" rel="stylesheet">  
+   
+
+    <script>
+
+        var frames = []; //Frames will be stored here
+        var frameNames = [];
+        var currentFrame = 0; //Index of currentFrame
+        var checkstatus = false; //Check for rough
+
+
+        function download() {
+
+            var fs = require('fs');
+            let author = document.getElementById("author");
+            let packagename = document.getElementById("packagename");
+            let modelname = document.getElementById("modelname");
+
+            frameNames.splice(currentFrame + 1, 0, modelname.value);
+            
+            var d = new Date(),  //Get the current time
+                h = (d.getHours() < 10 ? '0' : '') + d.getHours(),
+                m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+            let time = h + ':' + m;
+
+            var string = "$PIC-TALK Shape Display Package\n$Package: "+packagename.value+"\n$Created Time: "+time + "\n$Author: "+author.value +"\n";
+
+
+            var x = 0;
+            
+            frames.forEach(element => {
+                string += frameNames[x++] + "/:";
+                element.forEach(element2 => {
+                string += element2;
+                });
+                string += "&\n";
+            });
+            console.log(string);
+
+            try { fs.writeFileSync(packagename.value + ".ptsd", string, 'utf-8'); }
+            catch (e) { alert('Failed to save the file !'); }
+        }
+
+
+        function checkcontrol() {
+            var checkBox = document.getElementById("check");
+            if (checkBox.checked == true) {
+                checkstatus = false;
+            } else {
+                checkstatus = true;
+            }
+        }
+
+
+        function generate() {
+
+            var pixels = document.querySelectorAll(".pixel");
+            var heightList = [];
+            pixels.forEach(element => {
+                heightList[element.dataset.pos - 1] = element.dataset.height;
+            });
+            frames[currentFrame] = heightList;
+
+            var z = document.getElementById("Text");
+            var buf = ":0";
+
+            frames[currentFrame].forEach(element => {
+                buf += element;
+            });
+
+            buf += "&";
+
+            z.value = buf;
+        }
+
+
+        function mouseDown(e) {                             //Increase the number of pixel
+            var val = parseInt(e.target.dataset.height);
+            
+            if (checkstatus) {
+                if (e.button == 0) {
+                if (val < 9) {
+                    val++;
+                }
+                }
+                else if (e.button == 2) {
+                e.preventDefault();
+                if (val > 0) {
+                    val--;
+                }
+                }
+            }
+            else {
+                if (e.button == 0) {
+                val = 9;
+                e.target.style.backgroundColor = "red";
+                }
+                else if (e.button == 2) {
+                val = 0;
+
+                e.target.style.backgroundColor = "white";
+                }
+            }
+
+            e.target.dataset.height = val;
+            e.target.innerText = val;
+        }
+
+        function doubleClickEvent(e){
+
+            var val = parseInt(e.target.dataset.height);
+            val = 0;
+            e.target.style.backgroundColor = "white";
+
+            e.target.dataset.height = val;
+            e.target.innerText = val;
+
+        }
+
+        function saveFrame() {
+            var pixels = document.querySelectorAll(".pixel");
+            var heightList = [];
+            pixels.forEach(element => {
+                heightList[element.dataset.pos - 1] = element.dataset.height;
+                element.dataset.height = 0;
+                element.innerText = 0;
+                element.style.backgroundColor = "white";
+            });
+            frames[currentFrame] = heightList;
+            // frames.push(heightList);
+        }
+
+    function newFrame() {
+        
+
+        let modelname = document.getElementById("modelname");
+
+        if(modelname.value == null){
+            alert("Please write the name of model");
+        }
+        else{
+
+        var newFrameArray = [];
+        for (let index = 0; index < 64; index++) {
+            newFrameArray[index] = 0;
+        }
+        saveFrame();
+        frameNames.splice(currentFrame + 1, 0, modelname.value);
+        frames.splice(currentFrame + 1, 0, newFrameArray);
+        currentFrame++;
+
+        var x = document.getElementById("mySelect");
+        var option = document.createElement("option");
+        option.value = currentFrame;
+        option.text = "Frame = " + (frames.length); //
+        modelname.value = null;
+        x.add(option);
+        x.value = frames.length - 1;
+        }
+    }
+
+
+    function loadFrame(index) {
+
+        var frame = frames[index];
+        var pixels = document.querySelectorAll(".pixel");
+
+
+        pixels.forEach(element => {
+            element.dataset.height = frame[element.dataset.pos - 1];
+            element.innerText = frame[element.dataset.pos - 1];
+        });
+
+        currentFrame = index;
+        document.getElementById("currentframe").innerText = currentFrame + 1;
+        var x = document.getElementById("mySelect");
+        x.value = currentFrame;
+    }
+
+    function onFrameSelected(e) {
+
+        let modelname = document.getElementById("modelname");
+        saveFrame();
+        loadFrame(parseInt(e.target.value));
+        modelname.value = frameNames[e.target.value];
+    }
+
+    function zero(){
+        var pixels = document.querySelectorAll(".pixel");
+        pixels.forEach(element => {
+        element.dataset.height = 0;
+        element.innerText = 0;
+        element.style.backgroundColor = "white";
+    });
+    }
+
+    function animationSender(frames) {
+    saveFrame();
+    var string = "";
+    frames.forEach(element => {
+        element.forEach(element2 => {
+        string += element2;
+        });
+        string += "\n";
+    });
+    console.log(string);
+    }
+
+    function wait(ms) {
+        var start = new Date().getTime();
+        var end = start;
+        while (end < start + ms) {
+            end = new Date().getTime();
+        }
+    }
+
+    function arrangeModel(){
+        
+       
+        let author = document.getElementById("author");
+        let packagename = document.getElementById("packagename");
+        let modelname = document.getElementById("modelname");
+
+        frameNames.splice(currentFrame + 1, 0, modelname.value);
+        
+        var d = new Date(),  //Get the current time
+            h = (d.getHours() < 10 ? '0' : '') + d.getHours(),
+            m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+        let time = h + ':' + m;
+
+        var string = "$PIC-TALK Shape Display Package\n$Package: "+packagename.value+"\n$Created Time: "+time + "\n$Author: "+author.value +"\n";
+
+
+        var x = 0;
+       
+        frames.forEach(element => {
+            string += frameNames[x++] + "/:0";
+            element.forEach(element2 => {
+            string += element2;
+            });
+            string += "&\n";
+        });
+        console.log(string);
+
+        document.getElementById("data").value = string;
+  
+    }
+
+    </script>
+
+
+
+
+    <style>
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        #art{
+            display: table;
+            border-spacing: 1px;
+            background-color: black;
+            border:5px solid black;
+            text-align: center;
+        }
+
+        .center{
+            display: block;
+            margin-right: auto;
+            margin-left: auto;
+            width: 50%;
+        }
+
+        .noselect {
+        
+        }
+
+        .row1{
+            display: table-row;
+        }
+
+        .pixel{
+
+            -webkit-touch-callout: none; 
+            -webkit-user-select: none; 
+            -khtml-user-select: none; 
+            -moz-user-select: none; 
+                -ms-user-select: none; 
+                    user-select: none; 
+                                
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            display: table-cell;
+            background-color: white;
+            width: 60px;
+            height: 60px;
+            content: "0";
+        }
+</style>
+
+
+  <title>Shape-Display Model Maker</title>
+
+</head>
+
+
+
+
+
+
+<body>
+
+<div style="height:3rem"></div>
+
+
+<div class= "row justify-content-center">
+    <div class="col-8">
+
+        <h1 style="text-align: left">Shape-Display Model Maker </h1>
+        <div class="row">
+            
+            <div class="col" style="text-align: justify">
+                <p> This section exists diffrent type of contents that prepared for PIC-TALK products. To create new contents please visit here. </p>
+                <button class="btn"> To more... </button>
+            </div>
+            <div class="col">
+                <iframe width="400" height="200" src="https://www.youtube.com/embed/yJxuEhUjDRc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="height:3rem"></div>
+
+<div id="art" class="center">
+    <div class="row1">
+      <div class="pixel" data-pos="1" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)"> 0</div>
+      <div class="pixel" data-pos="2" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)"> 0</div>
+      <div class="pixel" data-pos="3" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)"> 0</div>
+      <div class="pixel" data-pos="4" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)"> 0</div>
+      <div class="pixel" data-pos="5" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)"> 0</div>
+      <div class="pixel" data-pos="6" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)"> 0</div>
+      <div class="pixel" data-pos="7" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)"> 0</div>
+      <div class="pixel" data-pos="8" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)"> 0</div>
+    </div>
+
+    <div class="row1">
+      <div class="pixel" data-pos="9" data-height="0"  ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)"> 0</div>
+      <div class="pixel" data-pos="10" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="11" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="12" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="13" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="14" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="15" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="16" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+    </div>
+    <div class="row1"> 
+      <div class="pixel" data-pos="17" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="18" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="19" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="20" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="21" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="22" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="23" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="24" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+    </div>
+ 
+    <div class="row1"> 
+      <div class="pixel" data-pos="25" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="26" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="27" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="28" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="29" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="30" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="31" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="32" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+    </div> 
+    <div class="row1">
+      <div class="pixel" data-pos="33" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="34" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="35" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="36" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="37" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="38" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="39" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="40" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+    </div>
+ 
+    <div class="row1">
+      <div class="pixel" data-pos="41" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="42" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="43" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="44" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="45" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="46" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="47" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="48" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+    </div>
+    <div class="row1">
+      <div class="pixel" data-pos="49" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="50" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="51" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="52" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="53" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="54" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="55" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="56" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+    </div>
+
+    <div class="row1">
+      <div class="pixel" data-pos="57" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="58" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="59" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="60" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="61" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="62" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="63" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+      <div class="pixel" data-pos="64" data-height="0" ondblclick="doubleClickEvent(event)" onmousedown="mouseDown(event)">0 </div>
+    </div>
+
+</div>
+  
+
+<div class="row justify-content-center">
+  
+  <div class="col-8">
+
+        <div style="height: 3rem"></div>
+        
+        <h3> Create Models</h3>
+        <input type="checkbox" id="check" name="check" value="true"  onclick="checkcontrol()" checked> Give Height
+        <button class="btn btn-dark" onclick="zero()">Zero Pins</button>
+ 
+        <div style="height: 1rem"></div>
+
+
+        <span id="currentframe">1</span>
+
+        <select id="mySelect" onchange="onFrameSelected(event)">
+        <option value="0">Frame = 1</option>
+        </select>
+        <input class="fixed" id="modelname" placeholder="Name of the Model">
+        <button class="btn btn-dark" type="button" onclick="newFrame()">Add New Model</button>
+        
+        
+        <div style="height: 1rem"> </div>
+        
+        
+        
+        <div class="row">
+            <div class="col-10 md-3">
+                <input class="fixed" style="width: 700px;" id="Text" type="text"
+                value=":00000000000000000000000000000000000000000000000000000000000000000&"><br> 
+            </div>
+            <div class="col md-3">
+                <button class="btn btn-dark" style="width: auto" type="button" onclick="generate()">Generate</button>
+            </div>
+            
+        </div>  
+
+
+        <div style= "height: 1rem"></div>
+
+        <hr> 
+        
+        <div style= "height: 1rem"></div>
+        <h2> Save the Models </h2>
+    
+
+        
+
+        
+
+        <form action="writedb" method="post">
+            
+            <div class="row">
+                <div class= "col-12 form-group"> 
+                    <select name="Type" class="form-control">
+                        <option value="1">Educational</option>
+                        <option value="2">Entertainment</option>
+                        <option value="3">Random</option>
+                    </select>
+                </div>
+
+                <div style= "height: 1rem"></div>
+
+                <div class= "col-12 col-md-3 form-group"> 
+                    <input class="form-control fixed" name="Author_Name" id="author" type="text" placeholder="Author Name">
+                </div>
+                
+
+                <div class= "col-12 col-md-3 form-group"> 
+                    <input class="form-control fixed" name="Email" id="email" type="text" placeholder="E-Mail">
+                </div>
+
+
+                <div class= "col-12 col-md-3 form-group"> 
+                    <input class="form-control fixed" name="Package_Name" id="packagename" type="text" placeholder="Name of the package">
+                </div>
+
+                <input name="Data" id="data" type="hidden" /> 
+
+                <div class= "col-12 col-md-3 form-group"> 
+                    <button class= "btn btn-primary" onclick="arrangeModel()" type="submit"  >Send to Editor</button>
+                </div>
+
+            </div>    
+        </form>
+
+
+
+
+
+    </div>
+</div>
+
+</body>
+</html>
+
+
+  
+        </main>
+    </div>
+
+    <head>
+  <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+  <style>
+      .picfont{
+        font-family: 'Oswald', serif;
+        font-size: 2rem;
+        
+      }
+    </style>
+
+</head>
+    
+</body>
+</html>
